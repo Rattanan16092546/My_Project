@@ -19,7 +19,7 @@
 #include "BlynkEdgent.h"
 const int pingPin = D1;
 int inPin = D2;
-
+///20 cm///
 
 BLYNK_WRITE(V0){
   int val = param.asInt();
@@ -54,10 +54,20 @@ pinMode(inPin, INPUT);
 duration = pulseIn(inPin, HIGH);
 
 cm = microsecondsToCentimeters(duration);
-Blynk.virtualWrite(V1, cm);
+int percent = 100 - ( (cm - 3) / (20 - 3) ) * 100;
+if(cm < 20 && cm> 3){
+  Blynk.virtualWrite(V1, percent);
+  Serial.print(percent);
+  Serial.print("%");
+  Serial.println();
+}
+else{
+  Blynk.virtualWrite(V1, 0);
+}
 Serial.print(cm);
 Serial.print("cm");
 Serial.println();
+
 delay(100);
 }
 

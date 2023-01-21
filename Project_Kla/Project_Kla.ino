@@ -17,8 +17,8 @@
 //#define USE_WEMOS_D1_MINI
 
 #include "BlynkEdgent.h"
-const int pingPin = D5;
-int inPin = D6;
+const int pingPin = D1;
+int inPin = D2;
 ///20 cm///
 
 BLYNK_WRITE(V0){
@@ -59,7 +59,7 @@ float val1 = (percent - 3) / 17;
 float val2 = val1 *100;
 float result = (val2-100) *(-1);
 //   (100-( (x - 3) / (20 - 3) ) * 100)
-if(cm <= 20 && cm> 3){
+if(cm <= 20 && cm >= 3){
   Blynk.virtualWrite(V1, result);
   Serial.print(result);
   Serial.print("%");
@@ -71,8 +71,6 @@ else{
 Serial.print(cm);
 Serial.print("cm");
 Serial.println();
-
-delay(100);
 }
 
 

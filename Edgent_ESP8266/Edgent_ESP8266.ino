@@ -54,7 +54,7 @@ pinMode(inPin, INPUT);
 duration = pulseIn(inPin, HIGH);
 
 cm = microsecondsToCentimeters(duration);
-
+Blynk.virtualWrite(V1, cm);
 Serial.print(cm);
 Serial.print("cm");
 Serial.println();

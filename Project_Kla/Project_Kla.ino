@@ -14,21 +14,30 @@
 //#define USE_SPARKFUN_BLYNK_BOARD
 //#define USE_NODE_MCU_BOARD
 //#define USE_WITTY_CLOUD_BOARD
-#define USE_WEMOS_D1_MINI
+//#define USE_WEMOS_D1_MINI
 
 #include "BlynkEdgent.h"
-const int pingPin = D1;
-int inPin = D2;
+const int trig = D1; //ประกาศขา trig
+const int echo = D2; //ประกาศขา echo
 int pump = D5;
-///20 cm///
+long duration, distance; //ประกาศตัวแปรเก็บค่าระยะ
 
-BLYNK_WRITE(V0){
-  int val = param.asInt();
-  digitalWrite(D0,val);
-}
+
+
+
+
+
+
+
+
+
+
+
 
 void setup()
 {
+  pinMode(echo, INPUT); //สั่งให้ขา echo ใช้งานเป็น input
+  pinMode(trig, OUTPUT); //สั่งให้ขา trig ใช้งานเป็น output
   pinMode(D0,OUTPUT);
   pinMode(pump,OUTPUT);
   Serial.begin(115200);
@@ -38,28 +47,23 @@ void setup()
 }
 
 void loop() {
-  BlynkEdgent.run();
-  long duration, cm;
-
-pinMode(pingPin, OUTPUT);
+   BlynkEdgent.run();
 
 
-digitalWrite(pingPin, LOW);
-delayMicroseconds(2);
-digitalWrite(pingPin, HIGH);
-delayMicroseconds(5);
-digitalWrite(pingPin, LOW);
-pinMode(inPin, INPUT);
-duration = pulseIn(inPin, HIGH);
+ digitalWrite(trig, LOW); 
+ delayMicroseconds(5); 
+ digitalWrite(trig, HIGH); 
+ delayMicroseconds(5); 
+ digitalWrite(trig, LOW); //ใช้งานขา tduration = pulseIn(echo, HIGH); //อ่านค่าของ echo
+ distance = (duration/2) / 29.1; //คำนวณเป็น centimeters
 
-cm = microsecondsToCentimeters(duration);
-float percent = cm;
-float val1 = (percent - 3) / 17;
-float val2 = val1 *100;
-float result = (val2-100) *(-1);
-//   (100-( (x - 3) / (20 - 3) ) * 100)
-  if(cm>=20){
-    while(cm > 4){
+  float percent = distance;
+  float val1 = (percent - 3) / 17;
+  float val2 = val1 *100;
+  float result = (val2-100) *(-1);
+
+  if(distance>=20){
+    while(distance > 4){
     digitalWrite(pump,HIGH);
     Blynk.virtualWrite(V2, 1);
     }
@@ -71,7 +75,7 @@ float result = (val2-100) *(-1);
   }
 
 
-if(cm <= 20 && cm >= 3){
+if(distance <= 20 && distance >= 3){
   Blynk.virtualWrite(V1, result);
   Serial.print(result);
   Serial.print("%");
@@ -81,18 +85,10 @@ if(cm <= 20 && cm >= 3){
 else{
   Blynk.virtualWrite(V1, 0);
 }
-Serial.print(cm);
-Serial.print("cm");
-Serial.println();
-delay(1);
+
+
 }
 
 
 
-long microsecondsToCentimeters(long microseconds)
-{
-// The speed of sound is 340 m/s or 29 microseconds per centimeter.
-// The ping travels out and back, so to find the distance of the
-// object we take half of the distance travelled.
-return microseconds / 29 / 2;
-}
+

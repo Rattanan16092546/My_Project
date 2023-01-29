@@ -17,17 +17,12 @@
 //#define USE_WEMOS_D1_MINI
 
 #include "BlynkEdgent.h"
-const int trig = D1; //ประกาศขา trig
-const int echo = D2; //ประกาศขา echo
+const int trig = D7; //ประกาศขา trig
+const int echo = D8; //ประกาศขา echo
 int pump = D5;
 long duration, distance; //ประกาศตัวแปรเก็บค่าระยะ
 
-
-
-
-
-
-
+BlynkTimer timer;
 
 
 
@@ -42,21 +37,33 @@ void setup()
   pinMode(pump,OUTPUT);
   Serial.begin(115200);
   delay(100);
-
+  timer.setInterval(1000L, fucking_loop);
   BlynkEdgent.begin();
 }
 
+
+
+
+
 void loop() {
    BlynkEdgent.run();
+   timer.run();   
+}
 
 
- digitalWrite(trig, LOW); 
+
+
+
+void fucking_loop(){
+   digitalWrite(trig, LOW); 
  delayMicroseconds(5); 
  digitalWrite(trig, HIGH); 
  delayMicroseconds(5); 
- digitalWrite(trig, LOW); //ใช้งานขา tduration = pulseIn(echo, HIGH); //อ่านค่าของ echo
+ digitalWrite(trig, LOW); //ใช้งานขา trig
+ duration = pulseIn(echo, HIGH); //อ่านค่าของ echo
  distance = (duration/2) / 29.1; //คำนวณเป็น centimeters
-
+ Serial.print(distance); 
+ Serial.print(" cm\n");
   float percent = distance;
   float val1 = (percent - 3) / 17;
   float val2 = val1 *100;
@@ -85,7 +92,6 @@ if(distance <= 20 && distance >= 3){
 else{
   Blynk.virtualWrite(V1, 0);
 }
-
 
 }
 

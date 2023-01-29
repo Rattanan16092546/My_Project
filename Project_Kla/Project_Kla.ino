@@ -14,11 +14,12 @@
 //#define USE_SPARKFUN_BLYNK_BOARD
 //#define USE_NODE_MCU_BOARD
 //#define USE_WITTY_CLOUD_BOARD
-//#define USE_WEMOS_D1_MINI
+#define USE_WEMOS_D1_MINI
 
 #include "BlynkEdgent.h"
 const int pingPin = D1;
 int inPin = D2;
+int pump = D5;
 ///20 cm///
 
 BLYNK_WRITE(V0){
@@ -29,6 +30,7 @@ BLYNK_WRITE(V0){
 void setup()
 {
   pinMode(D0,OUTPUT);
+  pinMode(pump,OUTPUT);
   Serial.begin(115200);
   delay(100);
 
@@ -37,9 +39,6 @@ void setup()
 
 void loop() {
   BlynkEdgent.run();
-
-
-
   long duration, cm;
 
 pinMode(pingPin, OUTPUT);
@@ -59,11 +58,25 @@ float val1 = (percent - 3) / 17;
 float val2 = val1 *100;
 float result = (val2-100) *(-1);
 //   (100-( (x - 3) / (20 - 3) ) * 100)
+  if(cm>=20){
+    while(cm > 4){
+    digitalWrite(pump,HIGH);
+    Blynk.virtualWrite(V2, 1);
+    }
+
+  }
+  else{
+    digitalWrite(pump,LOW);
+    Blynk.virtualWrite(V2, 0);
+  }
+
+
 if(cm <= 20 && cm >= 3){
   Blynk.virtualWrite(V1, result);
   Serial.print(result);
   Serial.print("%");
   Serial.println();
+
 }
 else{
   Blynk.virtualWrite(V1, 0);
@@ -71,6 +84,7 @@ else{
 Serial.print(cm);
 Serial.print("cm");
 Serial.println();
+delay(1);
 }
 
 
